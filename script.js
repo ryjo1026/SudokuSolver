@@ -23,6 +23,29 @@ Algorithm:
 */
 
 /**
+* @param {array} puzzle - TODO
+* @return {array} - TODO
+*/
+function splitQuadrants(puzzle) {
+  // startx = 0 2 0 2 | 0 3 6 0 3 6 0 3 6
+  // starty =  0 0 2 2 | 0 0 0 3 3 3 6 6 6
+
+  let subArrays = [];
+  for (let starty = 0; starty < puzzle[0].length; starty += boxLength) {
+    for (let startx = 0; startx < puzzle.length; startx += boxLength) {
+      let subArray = [];
+      for (let x = startx; x < startx+boxLength; x++) {
+        for (let y = starty; y < starty+boxLength; y++) {
+          subArray.push(puzzle[x][y]);
+        }
+      }
+      subArrays.push(subArray);
+    }
+  }
+  return subArrays;
+}
+
+/**
 * @param {array} arr - TODO
 * @return {boolean} - TODO
 */
@@ -51,6 +74,7 @@ function validate(puzzle) {
     if (!checkDuplicates(puzzle[i])) {
       return false;
     }
+
     // Generate an array for the column
     let column = [];
     for (let j = 0; j < puzzle[i].length; j++) {
@@ -61,28 +85,14 @@ function validate(puzzle) {
       return false;
     }
   }
-  // Size is the number of "quadrants" within the main puzzle
-  const size = puzzle.length / boxLength * (puzzle[0].length / boxLength);
-  let subArrays = [];
-  for (let i = 0; i < size; i++) {
-        let sub = [];
-        for (let j = 0; j < puzzle.length/boxLength; j++) {
-          sub[j] = [];
-        }
-        let startx = (boxLength * (i / boxLength)) % puzzle.length;
-        let starty = (boxLength * i) % puzzle[0].length;
 
-        if (starty + boxLength > puzzle[0].length) {
-            starty = 0;
-        }
-
-        for (let row = 0; row < boxLength; row++) {
-            for (let col = 0; col < boxLength; col++) {
-                console.log((startx + row) + ',' + (col + starty));
-                sub[row][col] = puzzle[startx + row][col + starty];
-            }
-        }
-        subArrays.push(sub);
+  // Create a 2D Array containing elements from each 'quadrant'
+  let quadrants = splitQuadrants(puzzle);
+  // Validate each 'quadrant'
+  for (let i = 0; i < quadrants.length; i++) {
+    if (!checkDuplicates(quadrants[i])) {
+      return false;
+    }
   }
   return true;
 }
