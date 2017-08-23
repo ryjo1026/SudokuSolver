@@ -131,32 +131,32 @@ function checkContainsNull(puzzle) {
 * @param {array} puzzle - TODO
 * @return {boolean} - TODO
 */
-function solvePuzzle(puzzle) {
-  // Keep running algorithm until no empties
-  while (checkContainsNull(puzzle) === true) {
-    for (let row = 0; row < puzzle.length; row++) {
-      for (let column = 0; column < puzzle[row].length; column++) {
-        if (puzzle[row][column] == null) {
-          // Try to solve the individual box
-          for (let i = 1; i <= puzzle.length; i++) {
-            let testPuzzle = puzzle.slice();
-            testPuzzle[row][column] = i;
-            if (validate(testPuzzle) == true) {
-              puzzle = testPuzzle;
-              break;
+function solve(puzzle) {
+  if (!checkContainsNull(puzzle)) {
+    return puzzle;
+  }
+  for (let row = 0; row < puzzle.length; row++) {
+    for (let column = 0; column < puzzle[row].length; column++) {
+      if (puzzle[row][column] == null) {
+        // Try to solve the individual box
+        for (let i = 1; i <= puzzle.length; i++) {
+          let testPuzzle = puzzle.slice();
+          testPuzzle[row][column] = i;
+          if (validate(testPuzzle) == true) {
+            if (solve(testPuzzle)) {
+              return testPuzzle;
             }
-            // TODO clean up hack; should be something with memory references
-            if (i == puzzle.length) {
-              puzzle[row][column] = null;
-            }
+            testPuzzle[row][column] = null;
+          }
+          // TODO clean up hack; should be something with memory references
+          if (i == puzzle.length) {
+            puzzle[row][column] = null;
           }
         }
       }
     }
-    console.log(puzzle);
   }
-  return puzzle;
 }
 
-console.log(solvePuzzle(masterPuzzle));
+console.log(solve(masterPuzzle));
 console.log(validate(masterPuzzle));
