@@ -6,9 +6,23 @@ const masterPuzzle = [
   [null, 4, 2, null],
   [3, 2, null, null],
 ];
-
 // TODO: Check array for this automatically
 const boxLength = 2;
+
+
+// const masterPuzzle = [
+//   [null, null, null, null, 9, null, 4, null, 3],
+//   [null, null, 3, null, 1, null, null, 9, 6],
+//   [2, null, null, 6, 4, null, null, null, 7],
+//   [4, null, null, 5, null, null, null, 6, null],
+//   [null, null, 1, null, null, null, 8, null, null],
+//   [null, 6, null, null, null, 1, null, null, 2],
+//   [1, null, null, null, 7, 4, null, null, 5],
+//   [8, 2, null, null, 6, null, 7, null, null],
+//   [7, null, 4, null, 5, null, null, null, null],
+// ];
+// const boxLength = 3;
+
 
 /**
 Algorithm:
@@ -17,6 +31,7 @@ Algorithm:
   -Cross-reference square values with possibilities, first check within quad
     then row then column
   -If no match continue to next
+  -Revisit squares if stuck (not always first number possibility)
 
   What about squares that depend on each other?
   -Will need to begin to fill in a possibility for a square and then check
@@ -97,4 +112,51 @@ function validate(puzzle) {
   return true;
 }
 
+/**
+* @param {array} puzzle - TODO
+* @return {boolean} - TODO
+*/
+function checkContainsNull(puzzle) {
+  for (let i = 0; i < puzzle.length; i++) {
+    for (let j = 0; j < puzzle[i].length; j++) {
+      if (puzzle[i][j] === null) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+* @param {array} puzzle - TODO
+* @return {boolean} - TODO
+*/
+function solvePuzzle(puzzle) {
+  // Keep running algorithm until no empties
+  while (checkContainsNull(puzzle) === true) {
+    for (let row = 0; row < puzzle.length; row++) {
+      for (let column = 0; column < puzzle[row].length; column++) {
+        if (puzzle[row][column] == null) {
+          // Try to solve the individual box
+          for (let i = 1; i <= puzzle.length; i++) {
+            let testPuzzle = puzzle.slice();
+            testPuzzle[row][column] = i;
+            if (validate(testPuzzle) == true) {
+              puzzle = testPuzzle;
+              break;
+            }
+            // TODO clean up hack; should be something with memory references
+            if (i == puzzle.length) {
+              puzzle[row][column] = null;
+            }
+          }
+        }
+      }
+    }
+    console.log(puzzle);
+  }
+  return puzzle;
+}
+
+console.log(solvePuzzle(masterPuzzle));
 console.log(validate(masterPuzzle));
