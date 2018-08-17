@@ -1,12 +1,8 @@
 import React from 'react';
 
-import Square from './Square';
-
 export default class Grid extends React.Component {
   constructor(props) {
     super(props);
-
-    this.last = React.createRef();
 
     this.squareRefs = [];
     for (let row = 0; row < 9; row += 1) {
@@ -19,29 +15,34 @@ export default class Grid extends React.Component {
   }
 
   handleEnter = (event, index) => {
-    // console.log(event.target, index);
-    // if (event.keyCode === 13) {
-    //   event.target.ref.focus();
-    // }
-    this.squareRefs[0][0].current.focus();
+    const nextSquareIndex = index + 1;
+
+    // Determine row and col from the index by reversing iperations
+    let nextRow = (nextSquareIndex - (nextSquareIndex % 9)) / 9;
+    let nextCol = nextSquareIndex % 9;
+
+    // If the square is the last one, loop around to the beginning
+    if (index === 80) {
+      nextRow = 0; nextCol = 0;
+    }
+    this.squareRefs[nextRow][nextCol].current.focus();
   }
 
   render() {
-    // You can now get a ref directly to the DOM button:
-
     // Generate 2D Array of Subgrids
     const rows = [];
     for (let row = 0; row < 9; row += 1) {
       const cols = [];
       for (let col = 0; col < 9; col += 1) {
-        const index = (3 * row) + col;
+        const index = (9 * row) + col;
         const square = (
           <input
             key={index}
+            index={index}
             type="number"
             value={index}
             style={{ width: '50px', height: '50px', border: '1px solid black' }}
-            onKeyDown={(event) => this.handleEnter(event, index)}
+            onKeyDown={(event) => { this.handleEnter(event, index); }}
             ref={this.squareRefs[row][col]}
           />);
         cols.push(square);
