@@ -71,13 +71,27 @@ export default class Grid extends React.Component {
       const cols = [];
       for (let col = 0; col < 9; col += 1) {
         const index = (9 * row) + col;
+        const style = {
+          width: '50px',
+          height: '50px',
+          borderTop: '1px solid black',
+          borderBottom: '1px solid black',
+          borderLeft: '1px solid black',
+          borderRight: '1px solid black',
+        };
+        if (col === 2 || col === 5) {
+          style.borderRight = '3px solid black';
+        }
+        if (row === 2 || row === 5) {
+          style.borderBottom = '3px solid black';
+        }
         const square = (
           <input
             key={index}
             index={index}
             type="text"
             value={values[row][col]}
-            style={{ width: '50px', height: '50px', border: '1px solid black' }}
+            style={style}
             onChange={(event) => { this.handleChange(event, index); }}
             onKeyDown={(event) => { this.handleEnter(event, index); }}
             ref={this.squareRefs[row][col]}
