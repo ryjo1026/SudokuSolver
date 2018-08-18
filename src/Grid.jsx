@@ -1,6 +1,8 @@
 import React from 'react';
 
-import './fonts.css';
+import solve from './solver';
+import './main.css';
+
 
 export default class Grid extends React.Component {
   constructor(props) {
@@ -8,7 +10,7 @@ export default class Grid extends React.Component {
 
     // Create one array for refs and one for values
     this.squareRefs = [];
-    const squareValues = [];
+    let squareValues = [];
     for (let row = 0; row < 9; row += 1) {
       const refCols = [];
       const valCols = [];
@@ -19,6 +21,18 @@ export default class Grid extends React.Component {
       this.squareRefs.push(refCols);
       squareValues.push(valCols);
     }
+
+    squareValues = [
+      ['', '', '', '', 9, '', 4, '', 3],
+      ['', '', 3, '', 1, '', '', 9, 6],
+      [2, '', '', 6, 4, '', '', '', 7],
+      [4, '', '', 5, '', '', '', 6, ''],
+      ['', '', 1, '', '', '', 8, '', ''],
+      ['', 6, '', '', '', 1, '', '', 2],
+      [1, '', '', '', 7, 4, '', '', 5],
+      [8, 2, '', '', 6, '', 7, '', ''],
+      [7, '', 4, '', 5, '', '', '', ''],
+    ];
 
     this.state = {
       values: squareValues,
@@ -50,13 +64,21 @@ export default class Grid extends React.Component {
       const { values } = this.state;
       values[row][col] = '';
       this.setState({ values });
-      this.focusNextSquare(index);
     }
 
     if (event.keyCode === 13 || event.keyCode === 32) {
       this.focusNextSquare(index);
     }
     // TODO Add arrow key handling
+  }
+
+  handleSubmit = () => {
+    const { values } = this.state;
+
+    const solution = solve(values);
+    if (solution) {
+      this.setState({ values: solution });
+    }
   }
 
   focusNextSquare(index) {
@@ -119,6 +141,9 @@ export default class Grid extends React.Component {
     return (
       <div className="Grid">
         {rows}
+        <button type="submit" onClick={this.handleSubmit}>
+          Solve Puzzle
+        </button>
       </div>);
   }
 }

@@ -2,5 +2,9 @@
 
 input {
   font-family: 'Roboto', sans-serif;
-  font-size: 10px;
+  font-size: 18px;
+}
+
+button {
+  border: 1px solid black;
 }

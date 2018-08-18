@@ -1,25 +1,3 @@
-// const masterPuzzle = [
-//   [null, null, 3, 2],
-//   [null, 3, 4, null],
-//   [null, 4, 2, null],
-//   [3, 2, null, null],
-// ];
-// // TODO: Check array for this automatically
-// const boxLength = 2;
-
-
-const masterPuzzle = [
-  [null, null, null, null, 9, null, 4, null, 3],
-  [null, null, 3, null, 1, null, null, 9, 6],
-  [2, null, null, 6, 4, null, null, null, 7],
-  [4, null, null, 5, null, null, null, 6, null],
-  [null, null, 1, null, null, null, 8, null, null],
-  [null, 6, null, null, null, 1, null, null, 2],
-  [1, null, null, null, 7, 4, null, null, 5],
-  [8, 2, null, null, 6, null, 7, null, null],
-  [7, null, 4, null, 5, null, null, null, null],
-];
-
 /**
 Algorithm:
   -Search through squares left->right and up->down
@@ -70,7 +48,7 @@ function solveNextSquare(puzzle) {
   let row = 0; let col = 0;
   for (let i = 0; i < puzzle.length; i += 1) {
     for (let j = 0; j < puzzle[i].length; j += 1) {
-      if (puzzle[i][j] === null) {
+      if (puzzle[i][j] === '') {
         row = i; col = j;
       }
     }
@@ -88,15 +66,16 @@ function solveNextSquare(puzzle) {
         return true;
       }
       // Backtrack if a mistake was made
-      newPuzzle[row][col] = null;
+      newPuzzle[row][col] = '';
     }
   }
+  return false;
 }
 
 function puzzleIsFull(puzzle) {
   for (let i = 0; i < puzzle.length; i += 1) {
     for (let j = 0; j < puzzle[i].length; j += 1) {
-      if (puzzle[i][j] === null) {
+      if (puzzle[i][j] === '') {
         return false;
       }
     }
@@ -117,4 +96,8 @@ function solve(puzzle) {
   return false;
 }
 
-console.log(solve(masterPuzzle), masterPuzzle);
+export default function solveHelper(puzzle) {
+  // Convert empty strings to nulls
+  solve(puzzle);
+  return puzzle;
+}
