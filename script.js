@@ -1,5 +1,3 @@
-'use strict';
-
 // const masterPuzzle = [
 //   [null, null, 3, 2],
 //   [null, 3, 4, null],
@@ -21,8 +19,6 @@ const masterPuzzle = [
   [8, 2, null, null, 6, null, 7, null, null],
   [7, null, 4, null, 5, null, null, null, null],
 ];
-const boxLength = 3;
-
 
 /**
 Algorithm:
@@ -37,127 +33,88 @@ Algorithm:
   -Will need to begin to fill in a possibility for a square and then check
 */
 
-/**
-* @param {array} puzzle - TODO
-* @return {array} - TODO
-*/
-function splitQuadrants(puzzle) {
-  // startx = 0 2 0 2 | 0 3 6 0 3 6 0 3 6
-  // starty =  0 0 2 2 | 0 0 0 3 3 3 6 6 6
-
-  let subArrays = [];
-  for (let starty = 0; starty < puzzle[0].length; starty += boxLength) {
-    for (let startx = 0; startx < puzzle.length; startx += boxLength) {
-      let subArray = [];
-      for (let x = startx; x < startx+boxLength; x++) {
-        for (let y = starty; y < starty+boxLength; y++) {
-          subArray.push(puzzle[x][y]);
-        }
-      }
-      subArrays.push(subArray);
-    }
+function valueIsInRow(puzzle, row, val) {
+  if (puzzle[row].indexOf(val) > -1) {
+    return true;
   }
-  return subArrays;
+  return false;
 }
 
-/**
-* @param {array} arr - TODO
-* @return {boolean} - TODO
-*/
-function checkDuplicates(arr) {
-  let valueArr = [];
-  for (let i = 0; i<arr.length; i++) {
-    if (arr[i] != null) {
-      valueArr.push(arr[i]);
-    }
-  }
-  return valueArr.length === new Set(valueArr).size;
-}
-
-/**
-* @param {array} puzzle - TODO
-* @return {boolean} - TODO
-*/
-function validate(puzzle) {
-  // Ensure puzzle is square
-  if (puzzle.length != puzzle[0].length) {
-    return false;
-  }
-  // Iterate through the puzzle to check rows and columns
-  for (let i = 0; i < puzzle.length; i++) {
-    // Check each row for duplicates
-    if (!checkDuplicates(puzzle[i])) {
-      return false;
-    }
-
-    // Generate an array for the column
-    let column = [];
-    for (let j = 0; j < puzzle[i].length; j++) {
-      column.push(puzzle[j][i]);
-    }
-    // Check each column for duplicates
-    if (!checkDuplicates(column)) {
-      return false;
-    }
-  }
-
-  // Create a 2D Array containing elements from each 'quadrant'
-  let quadrants = splitQuadrants(puzzle);
-  // Validate each 'quadrant'
-  for (let i = 0; i < quadrants.length; i++) {
-    if (!checkDuplicates(quadrants[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
-/**
-* @param {array} puzzle - TODO
-* @return {boolean} - TODO
-*/
-function checkContainsNull(puzzle) {
-  for (let i = 0; i < puzzle.length; i++) {
-    for (let j = 0; j < puzzle[i].length; j++) {
-      if (puzzle[i][j] === null) {
-        return true;
-      }
+function valueIsInCol(puzzle, col, val) {
+  for (let i = 0; i < puzzle.length; i += 1) {
+    if (puzzle[i][col] === val) {
+      return true;
     }
   }
   return false;
 }
 
-/**
-* @param {array} puzzle - TODO
-* @return {boolean} - TODO
-*/
-function solve(puzzle) {
-  // console.log(puzzle);
-  if (!checkContainsNull(puzzle)) {
-    return puzzle;
-  }
-  for (let row = 0; row < puzzle.length; row++) {
-    for (let column = 0; column < puzzle[row].length; column++) {
-      if (puzzle[row][column] == null) {
-        // Try to solve the individual box
-        for (let i = 1; i <= puzzle.length; i++) {
-          let testPuzzle = puzzle.slice();
-          testPuzzle[row][column] = i;
-          if (validate(testPuzzle) == true) {
-            if (solve(testPuzzle)) {
-              return testPuzzle;
-            }
-            testPuzzle[row][column] = null;
-          }
-          // TODO clean up hack; should be something with memory references
-          if (i == puzzle.length) {
-            puzzle[row][column] = null;
-          }
-        }
+function valueIsInBox(puzzle, row, col, val) {
+  // Get top coordinates for top left corner of the box
+  const boxCol = Math.floor(col / 3) * 3;
+  const boxRow = Math.floor(row / 3) * 3;
+
+  for (let i = 0; i < 3; i += 1) {
+    for (let j = 0; j < 3; j += 1) {
+      if (puzzle[boxRow + i][boxCol + j] === val) {
+        return true;
       }
+    }
+  }
+
+  return false;
+}
+
+function solveNextSquare(puzzle) {
+  const newPuzzle = puzzle;
+  let row = 0; let col = 0;
+  for (let i = 0; i < puzzle.length; i += 1) {
+    for (let j = 0; j < puzzle[i].length; j += 1) {
+      if (puzzle[i][j] === null) {
+        row = i; col = j;
+      }
+    }
+  }
+
+  // Iterate possible values
+  for (let i = 1; i <= 9; i += 1) {
+    // Check for no same value in row
+    if (!valueIsInRow(puzzle, row, i)
+      && !valueIsInCol(puzzle, col, i)
+      && !valueIsInBox(puzzle, row, col, i)) {
+      // Assign and solve the rest of the puzzle
+      newPuzzle[row][col] = i;
+      if (solve(newPuzzle)) {
+        return true;
+      }
+      // Backtrack if a mistake was made
+      newPuzzle[row][col] = null;
     }
   }
 }
 
-console.log(solve(masterPuzzle));
-console.log(validate(masterPuzzle));
+function puzzleIsFull(puzzle) {
+  for (let i = 0; i < puzzle.length; i += 1) {
+    for (let j = 0; j < puzzle[i].length; j += 1) {
+      if (puzzle[i][j] === null) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function solve(puzzle) {
+  if (puzzleIsFull(puzzle)) {
+    return puzzle;
+  }
+
+  if (solveNextSquare(puzzle)) {
+    return true;
+  }
+
+  // Trigger backtrack
+  return false;
+}
+
+console.log(solve(masterPuzzle), masterPuzzle);
