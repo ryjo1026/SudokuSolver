@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './fonts.css';
+
 export default class Grid extends React.Component {
   constructor(props) {
     super(props);
@@ -23,29 +25,39 @@ export default class Grid extends React.Component {
     };
   }
 
-  handleEnter = (event, index) => {
-    if (event.keyCode === 13) {
-      this.focusNextSquare(index);
-    }
-  }
-
-  handleChange = (event, index) => {
-    console.log(event.target.value)
-    if (!/^[0-9]?$/.test(event.target.value)) {
-      return;
-    }
-    if (parseInt(event.target.value, 10) > 9 || parseInt(event.target.value, 10) < 1) {
-      return;
-    }
-
+  getRowColFromIndex(index) {
     // Determine row and col from the index by reversing operations
     const row = (index - (index % 9)) / 9;
     const col = index % 9;
+    return { row, col };
+  }
 
-    const { values } = this.state;
-    values[row][col] = event.target.value;
-    this.setState({ values });
-    this.focusNextSquare(index);
+  handleEnter = (event, index) => {
+    if (event.keyCode >= 48 && event.keyCode <= 57) {
+      const val = String.fromCharCode(event.keyCode);
+
+      const { row, col } = this.getRowColFromIndex(index);
+
+      const { values } = this.state;
+      values[row][col] = val;
+      this.setState({ values });
+      this.focusNextSquare(index);
+    }
+
+    if (event.keyCode === 8 || event.keyCode === 46) {
+      const { row, col } = this.getRowColFromIndex(index);
+
+      const { values } = this.state;
+      values[row][col] = '';
+      this.setState({ values });
+      this.focusNextSquare(index);
+    }
+
+    if (event.keyCode === 13 || event.keyCode === 32) {
+      this.focusNextSquare(index);
+    }
+    
+    // TODO Add arrow key handling
   }
 
   focusNextSquare(index) {
@@ -74,6 +86,7 @@ export default class Grid extends React.Component {
         const style = {
           width: '50px',
           height: '50px',
+          textAlign: 'center',
           borderTop: '1px solid black',
           borderBottom: '1px solid black',
           borderLeft: '1px solid black',
@@ -92,7 +105,6 @@ export default class Grid extends React.Component {
             type="text"
             value={values[row][col]}
             style={style}
-            onChange={(event) => { this.handleChange(event, index); }}
             onKeyDown={(event) => { this.handleEnter(event, index); }}
             ref={this.squareRefs[row][col]}
           />);
