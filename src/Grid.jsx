@@ -1,7 +1,6 @@
 import React from 'react';
 
 import solve from './solver';
-import './main.css';
 
 
 export default class Grid extends React.Component {
@@ -22,6 +21,7 @@ export default class Grid extends React.Component {
       squareValues.push(valCols);
     }
 
+    // Load in sample puzzle
     squareValues = [
       ['', '', '', '', 9, '', 4, '', 3],
       ['', '', 3, '', 1, '', '', 9, 6],
@@ -132,7 +132,7 @@ export default class Grid extends React.Component {
         cols.push(square);
       }
       rows.push(
-        <div className="row" key={row} style={{ display: 'flex' }}>
+        <div className="row" key={row} >
           {cols}
         </div>
       );
@@ -141,9 +141,7 @@ export default class Grid extends React.Component {
     return (
       <div className="Grid">
         {rows}
-        <button type="submit" onClick={this.handleSubmit}>
-          Solve Puzzle
-        </button>
-      </div>);
+      </div>
+    );
   }
 }

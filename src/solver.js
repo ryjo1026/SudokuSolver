@@ -97,7 +97,6 @@ function solve(puzzle) {
 }
 
 export default function solveHelper(puzzle) {
-  // Convert empty strings to nulls
   solve(puzzle);
   return puzzle;
 }
